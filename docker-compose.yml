@@ -1,0 +1,32 @@
+version: '3.7'
+
+services:
+  app-server:
+    image: crm_jwt
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+       - "SPRING_PROFILES_ACTIVE=container"
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - backend
+
+  db:
+    image: mysql:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DB: customer
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+    networks:
+      - backend
+
+networks:
+  backend:

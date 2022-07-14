@@ -3,7 +3,7 @@ package com.praveen.cms.api.advice;
 import com.praveen.cms.api.constant.AppConstants;
 import com.praveen.cms.api.exception.AppException;
 import com.praveen.cms.api.exception.CustomerNotFoundException;
-import com.praveen.cms.api.exception.ProductNotFoundException;
+import com.praveen.cms.api.exception.MessageNotFoundException;
 import com.praveen.cms.api.response.BaseApiResponse;
 import com.praveen.cms.api.response.ResponseStatus;
 import org.springframework.http.HttpStatus;
@@ -34,8 +34,8 @@ public class ControllerAdvice1 extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(baseApiResponse, HttpStatus.OK);
     }
 
-    @ExceptionHandler(ProductNotFoundException.class)
-    public ResponseEntity<BaseApiResponse> productNotFoundExceptionHandle(ProductNotFoundException productNotFound,
+    @ExceptionHandler(MessageNotFoundException.class)
+    public ResponseEntity<BaseApiResponse> productNotFoundExceptionHandle(MessageNotFoundException productNotFound,
                                                                           HttpServletRequest request){
         BaseApiResponse baseApiResponse = new BaseApiResponse();
         baseApiResponse.setResponseStatus(new ResponseStatus(AppConstants.StatusCodes.FAILURE));

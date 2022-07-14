@@ -9,6 +9,7 @@ import lombok.Setter;
 //import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -32,9 +33,8 @@ public class Customer extends BaseEntity {
     @Column(name="password")
     private String password;
 
-    ///@IndexedEmbedded(maxDepth = 2)
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "customer",cascade = CascadeType.ALL)
-    private List<Order> orderList;
+    private List<Message> messageList;
 
     public Customer(){
 
@@ -44,6 +44,14 @@ public class Customer extends BaseEntity {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+    }
+
+    public void addMessageToUser(Message msg) {
+        if (messageList == null) {
+            messageList = new ArrayList<>();
+        }
+        messageList.add(msg);
+        msg.setCustomer(this);
     }
 
     @Override

@@ -4,14 +4,9 @@ import com.praveen.cms.api.bo.AddCustomerBo;
 import com.praveen.cms.api.constant.AppConstants;
 import com.praveen.cms.api.convertor.CustomerConvertor;
 import com.praveen.cms.api.dao.CustomerDao;
-import com.praveen.cms.api.dao.OrderDao;
-import com.praveen.cms.api.dao.ProductDao;
 import com.praveen.cms.api.entity.Customer;
-import com.praveen.cms.api.entity.Order;
-import com.praveen.cms.api.entity.Product;
 import com.praveen.cms.api.exception.CustomerAlreadyExistException;
 import com.praveen.cms.api.exception.CustomerNotFoundException;
-import com.praveen.cms.api.request.ProductsRequest;
 import com.praveen.cms.api.response.*;
 import com.praveen.cms.api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,12 +26,6 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerDao customerDao;
-
-    @Autowired
-    private OrderDao orderDao;
-
-    @Autowired
-    private ProductDao productDao;
 
     @Override
     public CustomerListResponse getCustomers(int page,int limit)
@@ -117,63 +106,4 @@ public class CustomerServiceImpl implements CustomerService {
 
         return customerDeleteResponse;
     }
-
-    @Override
-    public OrderPlacedResponse purchaseProductsService(Long customerId, ProductsRequest productRequest)
-    {
-        Optional<Customer> optionalCustomer = customerDao.getCustomerById(customerId);
-        optionalCustomer.orElseThrow(
-                () -> new CustomerNotFoundException(AppConstants.ErrorTypes.NO_CUSTOMER_FOUND_ERROR,
-                        AppConstants.ErrorCodes.CUSTOMER_DOES_NOT_EXISTS_ERROR_CODE,AppConstants.ErrorMessages.CUSTOMER_NOT_EXISTS_ERROR_MESSAGE)
-        );
-        Customer customer = optionalCustomer.get();
-        List<Long> productsId = productRequest.getProductsId();
-        List<Product> products = productDao.getProductsByIdIn(productsId);
-        Order order = new Order();
-        order.setCustomer(customer);
-        order.setProductList(products);
-        Long orderId = orderDao.savePurchaseOrder(order);
-        OrderPlacedResponse orderPlacedResponse = new OrderPlacedResponse();
-        orderPlacedResponse.setOrderId(orderId);
-        return orderPlacedResponse;
-
-    }
-
-    @Override
-    public PurchasedProductsListResponse viewAllPurchasedProductList(int page,int limit,Long customerId) {
-        if(page>0)
-            page=page-1;
-        Pageable pageable = PageRequest.of(page,limit);
-        List<Long> orderIds = orderDao.getOrdersIdByCustomerId(customerId);
-        List<Order> orderEntities = orderDao.getOrdersEntityByOrderIdIn(orderIds);
-
-        List<ProductDetailResponse> productDetailResponseList = new ArrayList<>();
-        for(Order order : orderEntities){
-            List<Product> products = order.getProductList();
-            for (Product product : products){
-                ProductDetailResponse productDetailResponse = new ProductDetailResponse();
-                productDetailResponse.setProductName(product.getProductName());
-                productDetailResponse.setPrice(product.getPrice());
-                productDetailResponse.setDescription(product.getProductDescription());
-                productDetailResponse.setProductId(product.getId());
-                productDetailResponseList.add(productDetailResponse);
-            }
-        }
-        int start = (int) pageable.getOffset();
-        int end = ((start+pageable.getPageSize()) > productDetailResponseList.size() ? productDetailResponseList.size() : (start+pageable.getPageSize()));
-        Page<ProductDetailResponse> productPages = new PageImpl<>(productDetailResponseList.subList(start,end),pageable,productDetailResponseList.size());
-        List<ProductDetailResponse> productResponseList = productPages.getContent();
-        CommonPaginationResponse commonPaginationResponse = new CommonPaginationResponse();
-        commonPaginationResponse.setTotalNumberOfPageAsPerGivenLimit(productPages.getTotalPages());
-        PurchasedProductsListResponse purchasedProductsListResponse = new PurchasedProductsListResponse();
-        purchasedProductsListResponse.setProductDetailResponseList(productResponseList);
-        purchasedProductsListResponse.setCommonPaginationResponse(commonPaginationResponse);
-        return purchasedProductsListResponse;
-    }
-
-//    @Override
-//    public List<Customer> searchCustomer(String name) {
-//        return customerDao.searchCustomerDao(name);
-//    }
-
 }

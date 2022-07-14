@@ -1,7 +1,6 @@
 package com.praveen.cms.api.controller;
 
 import com.praveen.cms.api.bo.AddCustomerBo;
-import com.praveen.cms.api.bo.CustomerSignInBo;
 import com.praveen.cms.api.constant.AppConstants;
 import com.praveen.cms.api.constant.RestMappingConstants;
 import com.praveen.cms.api.constant.SecurityConstants;
@@ -9,8 +8,12 @@ import com.praveen.cms.api.convertor.CustomerConvertor;
 import com.praveen.cms.api.entity.Customer;
 import com.praveen.cms.api.request.CustomerAddRequest;
 import com.praveen.cms.api.request.CustomerSignInRequest;
-import com.praveen.cms.api.request.ProductsRequest;
-import com.praveen.cms.api.response.*;
+import com.praveen.cms.api.response.BaseApiResponse;
+import com.praveen.cms.api.response.CustomerAddResponse;
+import com.praveen.cms.api.response.CustomerDeleteResponse;
+import com.praveen.cms.api.response.CustomerDetailResponse;
+import com.praveen.cms.api.response.CustomerListResponse;
+import com.praveen.cms.api.response.ResponseBuilder;
 import com.praveen.cms.api.security.JwtTokenProvider;
 import com.praveen.cms.api.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +23,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping(RestMappingConstants.CustomerRequestUri.Customer_BASE_URL)
@@ -73,7 +84,8 @@ public class CustomerController {
     }
 
     @PostMapping(path = RestMappingConstants.CustomerRequestUri.SIGNIN_CUSTOMER)
-    public ResponseEntity<BaseApiResponse> signInCustomer(
+    public @ResponseBody
+    ResponseEntity<BaseApiResponse> signInCustomer(
             @RequestBody CustomerSignInRequest customerSignInRequest,
             HttpServletResponse signinResponse, HttpServletRequest request){
 
@@ -113,39 +125,4 @@ public class CustomerController {
         BaseApiResponse baseApiResponse = ResponseBuilder.getSuccessResponse(customerDeleteResponse);
         return new ResponseEntity<>(baseApiResponse,HttpStatus.OK);
     }
-
-    @PostMapping(path = RestMappingConstants.CustomerRequestUri.PURCHASE_PRODUCTS)
-    public ResponseEntity<BaseApiResponse> purchaseProducts(
-            @RequestHeader(value = AppConstants.Common.TOKEN_HEADER, required = true) String token,
-            @RequestParam("customerId") Long customerId,
-            @RequestBody ProductsRequest productRequest,HttpServletRequest request
-    ){
-        OrderPlacedResponse orderPlacedResponse = customerService.purchaseProductsService(customerId,productRequest);
-        BaseApiResponse baseApiResponse = ResponseBuilder.getSuccessResponse(orderPlacedResponse);
-        return new ResponseEntity<>(baseApiResponse,HttpStatus.OK);
-    }
-
-    @GetMapping(path = RestMappingConstants.CustomerRequestUri.VIEW_ALL_PURCHASED_PRODUCTS)
-    public ResponseEntity<BaseApiResponse> viewAllProducts(
-            @RequestHeader(value = AppConstants.Common.TOKEN_HEADER, required = true) String token,
-            @RequestParam(value = AppConstants.Common.PAGE_NUMBER,defaultValue = "0") int page,
-            @RequestParam(value = AppConstants.Common.PAGE_LIMIT,defaultValue = AppConstants.Common.PAGE_LIMIT_VALUE) int limit,
-            @RequestParam("customerId") Long customerId,HttpServletRequest request
-    )
-    {
-        PurchasedProductsListResponse productsListResponse = customerService.viewAllPurchasedProductList(page,limit,customerId);
-        BaseApiResponse baseApiResponse = ResponseBuilder.getSuccessResponse(productsListResponse);
-        return new ResponseEntity<>(baseApiResponse,HttpStatus.OK);
-    }
-
-//    @GetMapping(path = RestMappingConstants.CustomerRequestUri.SEARCH_CUSTOMER_OR_PRODUCT)
-//    public ResponseEntity<BaseApiResponse> searchCustomer(
-//            @RequestParam("name") String name,
-//            HttpServletRequest request
-//    ){
-//        List<Customer> customerList = customerService.searchCustomer(name);
-//        BaseApiResponse baseApiResponse = ResponseBuilder.getSuccessResponse(customerList);
-//        return new ResponseEntity<>(baseApiResponse,HttpStatus.OK);
-//    }
-
 }

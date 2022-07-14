@@ -11,12 +11,11 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductListResponse {
-
-    List<ProductDetailResponse> productsResponseList;
+public class MessageListResponse {
+    List<MessageDetailResponse> messageResponseList;
     CommonPaginationResponse commonPaginationResponse;
 
-    public ProductListResponse(List<ProductDetailResponse> productsResponseList) {
-        this.productsResponseList = productsResponseList;
+    public MessageListResponse(List<MessageDetailResponse> messageResponseList) {
+        this.messageResponseList = messageResponseList;
     }
 }

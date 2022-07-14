@@ -15,20 +15,9 @@ public interface RestMappingConstants {
         String SIGNIN_CUSTOMER ="/signin" ;
         String SEARCH_CUSTOMER_OR_PRODUCT ="/search" ;
     }
-
-    public interface OrderRequestUri{
-        String ORDER_BASE_URL = APP_BASE + "/order";
-        String GET_CUSTOMER_BY_ID = "/customer";
-        String GET_PRODUCTS_BY_ORDER_ID = "/products";
+    public interface MessageRequestUri {
+        String MESSAGE_BASE_URL = APP_BASE + "/message";
+        String GET_MESSAGE_LIST = "/getMessages";
+        String ADD_MESSAGE = "/addMessage";
     }
-
-    public interface ProductRequestUri{
-        String PRODUCT_BASE_URL = APP_BASE + "/product";
-        String GET_PRODUCT_LIST = "/getProducts";
-        String GET_PRODUCT_BY_ID = "/getProduct";
-        String ADD_PRODUCT = "/addProduct";
-        String UPDATE_PRODUCT = "/updateProduct";
-        String DELETE_PRODUCT = "/deleteProduct";
-    }
-
 }

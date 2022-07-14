@@ -1,6 +1,7 @@
 package com.praveen.cms.api.security;
 
 import com.praveen.cms.api.entity.Customer;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -15,6 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class UserPrincipal implements UserDetails {
 
     private String name;
@@ -30,18 +33,18 @@ public class UserPrincipal implements UserDetails {
     }
 
     public UserPrincipal create(Customer customer) {
-        System.out.println("In create method of UserPrincioal authorities: "+authorities);
+        System.out.println("In create method of UserPrincipal authorities: "+authorities);
         name = customer.getFirstName()+ " " +customer.getLastName();
         return new UserPrincipal(
                 name,
                 customer.getEmail(),
                 customer.getPassword(),
-                new HashSet<>()
+                new ArrayList<>()
         );
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override

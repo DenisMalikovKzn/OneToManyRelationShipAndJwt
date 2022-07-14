@@ -9,10 +9,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ProductDetailResponse {
+public class MessageDetailResponse {
 
-    private Long productId;
-    private String productName;
-    private String description;
-    private double price;
+    private Long messageId;
+    private String message;
 }
